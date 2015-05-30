@@ -1,10 +1,10 @@
-
+import re
 
 class ELPHStream():
 
   # optional acceptedKeys parameter to generate keys in advance
   def __init__(self, acceptedKeys = []):
-    self.stream = []
+    self.stream = ''
     # should start with null string if not generating keys in advance?
     self.histogram = {} #{'':{}}
 
@@ -49,10 +49,43 @@ class ELPHStream():
 
     # print("~~~" + str(len(self.histogram.keys())) + "~~~") # should be 16383
 
-  def record(self, asdf):
+  def record(self, incomming):
+
+    for key in self.histogram.keys():
+
+      ''' Algorithm 1: regex '''
+      if re.compile(key + '$').match(self.stream):
+        if self.histogram[key][incomming]:
+          self.histogram[key][incomming] = 1
+        else:
+          self.histogram[key][incomming] += 1
+
+
+      ''' Algorithm 2: manual '''
+      # index = 1
+      # matches = True
+      # # can probably remove one depending on which generation algorithm is used
+      # while (index <= len(key) and index <= len(self.stream) and matches):
+      #   if (key[-1 * index] != stream[-1 * index]):
+      #     matches = False
+      #   index += 1
+      # if matches:
+      #   if self.histogram[key][incomming]:
+      #     self.histogram[key][incomming] = 1
+      #   else:
+      #     self.histogram[key][incomming] += 1
+
+
+
+    self.stream = self.stream + incomming
+    if (len(self.stream) > 7):
+      self.stream = self.stream[-7:]
+
+  # TODO:
+  def predict(self):
     pass
-    # compare speed of regex vs. manual...
 
 
-ELPHStream(['r','p','s'])
+s = ELPHStream(['r','p','s'])
+s.record('s')
 
