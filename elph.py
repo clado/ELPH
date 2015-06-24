@@ -2,10 +2,11 @@ from math import log
 
 class ELPHStream():
 
-  def __init__(self, hypothesis_threshold=.5):
+  def __init__(self, hypothesis_threshold=1, memory=7):
     self.__stream = ''
     self.__histogram = {}
     self.__threshold = hypothesis_threshold
+    self.__memory = memory
 
   def record(self, event):
 
@@ -35,10 +36,10 @@ class ELPHStream():
           self.__histogram[subset]['count'] += 1
           self.__histogram[subset]['frequency'][event] += 1
 
-    # add event to stream and restrict stream to seven elements max
+    # add event to stream and restrict stream to the maximum memory
     self.__stream = self.__stream + event
-    if (len(self.__stream) > 7):
-      self.__stream = self.__stream[-7:]
+    if (len(self.__stream) > self.__memory):
+      self.__stream = self.__stream[-1 * self.__memory:]
 
   # TODO:
   def predict(self):
