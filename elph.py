@@ -1,5 +1,17 @@
 from math import log
 
+def __shannon_entropy(histogram):
+  entropy = 0
+  for event in histogram.frequency:
+    entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
+  return entropy * -1
+
+def __reliable_entropy(histogram):
+  entropy = log(1 / histogram.count) / histogram.count
+  for event in histogram.frequency:
+    entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
+  return entropy * -1
+
 class ELPHStream():
 
   def __init__(self, hypothesis_threshold=1, memory=7):
@@ -48,20 +60,8 @@ class ELPHStream():
   def __prune(self):
     subsets = self.__histogram.keys()
     for subset in subets:
-      if self.__shannon_entropy(self.__histogram[subset]) > hypothesis_threshold:
+      if __shannon_entropy(self.__histogram[subset]) > hypothesis_threshold:
         del self.__histogram[subset]
-
-  def __shannon_entropy(self, histogram):
-    entropy = 0
-    for event in histogram.frequency:
-      entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
-    return entropy * -1
-
-  def __reliable_entropy(self, histogram):
-    entropy = log(1 / histogram.count) / histogram.count
-    for event in histogram.frequency:
-      entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
-    return entropy * -1
 
 s = ELPHStream()
 s.record('s')
