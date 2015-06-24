@@ -50,7 +50,7 @@ class ELPHStream():
 
     # add event to stream and restrict stream to the maximum memory
     self.__stream = self.__stream + event
-    if (len(self.__stream) > self.__memory):
+    if len(self.__stream) > self.__memory:
       self.__stream = self.__stream[-1 * self.__memory:]
 
   # TODO:
@@ -58,9 +58,8 @@ class ELPHStream():
     pass
 
   def __prune(self):
-    subsets = self.__histogram.keys()
-    for subset in subets:
-      if __shannon_entropy(self.__histogram[subset]) > hypothesis_threshold:
+    for subset, histogram in self.__histogram:
+      if __shannon_entropy(histogram) > self.__threshold:
         del self.__histogram[subset]
 
 s = ELPHStream()
