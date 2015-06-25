@@ -1,15 +1,15 @@
 from math import log
 
-def __shannon_entropy(histogram):
+def shannon_entropy(histogram):
   entropy = 0
-  for event in histogram.frequency:
-    entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
+  for event in histogram['frequency']:
+    entropy += (histogram['frequency'][event] / histogram['count']) * log(histogram['frequency'][event] / histogram['count'])
   return entropy * -1
 
-def __reliable_entropy(histogram):
-  entropy = log(1 / histogram.count) / histogram.count
-  for event in histogram.frequency:
-    entropy += (histogram.frequency[event] / histogram.count) * log(histogram.frequency[event] / histogram.count)
+def reliable_entropy(histogram):
+  entropy = log(1 / histogram['count']) / histogram['count']
+  for event in histogram['frequency']:
+    entropy += (histogram['frequency'][event] / histogram['count']) * log(histogram['frequency'][event] / histogram['count'])
   return entropy * -1
 
 class ELPHStream():
