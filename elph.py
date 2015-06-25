@@ -62,9 +62,3 @@ class ELPHStream():
       if __shannon_entropy(histogram) > self.__threshold:
         del self.__histogram[subset]
 
-s = ELPHStream()
-s.record('s')
-s.record('f')
-s.record('5')
-s.record('3')
-
