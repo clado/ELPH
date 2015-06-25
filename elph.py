@@ -53,12 +53,41 @@ class ELPHStream():
     if len(self.__stream) > self.__memory:
       self.__stream = self.__stream[-1 * self.__memory:]
 
-  # TODO:
+  # predict the next element in the stream
+  # returns element (string), entropy (double) as a tuple
   def predict(self):
-    pass
+    lowest_entropy = self.__threshold
+    predictive_subset = ''
 
+    for subset, histogram in self.__histogram.items():
+      # use regex or do manually?
+      index = -1
+      matches = True
+      # calcualte lengths once beforehand
+      while index >= -1 * len(self.__stream) and index >= -1 * len(subset) and matches:
+        if self.__stream[index] != subset[index] and subset[index] != '*':
+          matches = False
+        index -= 1
+      if matches:
+        # using naive approach for now...
+        possible_entropy = shannon_entropy(histogram)
+        if possible_entropy < lowest_entropy:
+          lowest_entropy = possible_entropy
+          predictive_subset = subset
+
+    result = self.__histogram[predictive_subset]
+    max_count = 0
+    best_guess = ''
+    for guess, count in result['frequency'].items():
+      if count > max_count:
+        max_count = count
+        best_guess = guess
+    return best_guess, lowest_entropy
+
+  # should be public so that we can call this at custom times?
+  # allow threshold to be overwritten?
   def __prune(self):
-    for subset, histogram in self.__histogram:
-      if __shannon_entropy(histogram) > self.__threshold:
+    for subset, histogram in self.__histogram.items():
+      if shannon_entropy(histogram) > self.__threshold:
         del self.__histogram[subset]
 
