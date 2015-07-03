@@ -16,7 +16,7 @@ class ELPHStream():
 
   def __init__(self, hypothesis_threshold=1, memory=7):
     self.__stream = ''
-    self.__histogram = {}
+    self.__hspace = {}
     self.__threshold = hypothesis_threshold
     self.__memory = memory
 
@@ -37,19 +37,20 @@ class ELPHStream():
       subset = ''.join(subset).lstrip('*')
       if len(subset) > 0:
         # new subset
-        if subset not in self.__histogram.keys():
-          self.__histogram[subset] = { 'count': 1, 'frequency': { event: 1} }
+        if subset not in self.__hspace.keys():
+          self.__hspace[subset] = { 'count': 1, 'frequency': { event: 1} }
         # old subset and new event
-        elif event not in self.__histogram[subset]:
-          self.__histogram[subset]['count'] += 1
-          self.__histogram[subset]['frequency'][event] = 1
+        elif event not in self.__hspace[subset]:
+          self.__hspace[subset]['count'] += 1
+          self.__hspace[subset]['frequency'][event] = 1
         # existing subset and existing event
         else:
-          self.__histogram[subset]['count'] += 1
-          self.__histogram[subset]['frequency'][event] += 1
+          self.__hspace[subset]['count'] += 1
+          self.__hspace[subset]['frequency'][event] += 1
 
-    # add event to stream and restrict stream to the maximum memory
+    # add event to stream
     self.__stream = self.__stream + event
+    # restrict stream to the maximum memory
     if len(self.__stream) > self.__memory:
       self.__stream = self.__stream[-1 * self.__memory:]
 
@@ -59,7 +60,7 @@ class ELPHStream():
     lowest_entropy = self.__threshold
     predictive_subset = ''
 
-    for subset, histogram in self.__histogram.items():
+    for subset, histogram in self.__hspace.items():
       # use regex or do manually?
       index = -1
       matches = True
@@ -75,7 +76,7 @@ class ELPHStream():
           lowest_entropy = possible_entropy
           predictive_subset = subset
 
-    result = self.__histogram[predictive_subset]
+    result = self.__hspace[predictive_subset]
     max_count = 0
     best_guess = ''
     for guess, count in result['frequency'].items():
@@ -87,7 +88,7 @@ class ELPHStream():
   # should be public so that we can call this at custom times?
   # allow threshold to be overwritten?
   def __prune(self):
-    for subset, histogram in self.__histogram.items():
+    for subset, histogram in self.__hspace.items():
       if shannon_entropy(histogram) > self.__threshold:
-        del self.__histogram[subset]
+        del self.__hspace[subset]
 
