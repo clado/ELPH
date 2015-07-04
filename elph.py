@@ -1,5 +1,6 @@
 from math import log
 
+# not currently in use
 def shannon_entropy(histogram):
   entropy = 0
   for event in histogram['frequency']:
@@ -57,6 +58,10 @@ class ELPHStream():
   # predict the next element in the stream
   # returns element (string), entropy (double) as a tuple
   def predict(self):
+    # early return in case prediction is called on empty hspace
+    if len(self.__hspace.items()) == 0:
+      return None, self.__threshold
+
     lowest_entropy = self.__threshold
     predictive_subset = ''
 
@@ -85,9 +90,7 @@ class ELPHStream():
         best_guess = guess
     return best_guess, lowest_entropy
 
-  # should be public so that we can call this at custom times?
-  # allow threshold to be overwritten?
-  def __prune(self):
+  def prune(self):
     for subset, histogram in self.__hspace.items():
       if shannon_entropy(histogram) > self.__threshold:
         del self.__hspace[subset]
