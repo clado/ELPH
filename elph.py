@@ -91,7 +91,8 @@ class ELPHStream():
     return best_guess, lowest_entropy
 
   def prune(self):
-    for subset, histogram in self.__hspace.items():
+    hypotheses = self.__hspace.items()
+    for hypothesis, histogram in hypotheses:
       if shannon_entropy(histogram) > self.__threshold:
-        del self.__hspace[subset]
+        del self.__hspace[hypothesis]
 
