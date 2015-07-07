@@ -15,12 +15,16 @@ def reliable_entropy(histogram):
 
 class ELPHStream():
 
+  # hypothesis_threshold: all hypotheses with entropy above this value will be pruned
+  # memory: max stream size to be maintained/"max items to be remembered"
   def __init__(self, hypothesis_threshold=1, memory=7):
     self.__stream = ''
     self.__hspace = {}
     self.__threshold = hypothesis_threshold
     self.__memory = memory
 
+  # record a new event by adding it to the stream and adding applicable hypotheses to the hspace
+  # takes event (string) that will be recroded
   def record(self, event):
 
     # generate all subsets of current stream
@@ -41,7 +45,7 @@ class ELPHStream():
         if subset not in self.__hspace.keys():
           self.__hspace[subset] = { 'count': 1, 'frequency': { event: 1} }
         # old subset and new event
-        elif event not in self.__hspace[subset]:
+        elif event not in self.__hspace[subset]['frequency']:
           self.__hspace[subset]['count'] += 1
           self.__hspace[subset]['frequency'][event] = 1
         # existing subset and existing event
@@ -69,13 +73,12 @@ class ELPHStream():
       # use regex or do manually?
       index = -1
       matches = True
-      # calcualte lengths once beforehand
+      # calculate lengths once beforehand
       while index >= -1 * len(self.__stream) and index >= -1 * len(subset) and matches:
         if self.__stream[index] != subset[index] and subset[index] != '*':
           matches = False
         index -= 1
       if matches:
-        # using naive approach for now...
         possible_entropy = shannon_entropy(histogram)
         if possible_entropy < lowest_entropy:
           lowest_entropy = possible_entropy
@@ -90,6 +93,7 @@ class ELPHStream():
         best_guess = guess
     return best_guess, lowest_entropy
 
+  # removes hypotheses that are no longer reliable from the hspace
   def prune(self):
     hypotheses = self.__hspace.items()
     for hypothesis, histogram in hypotheses:
