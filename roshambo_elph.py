@@ -39,6 +39,7 @@ class RoshamboELPHStream():
   def __transform_prediction(self, move_map, prediction=None):
     if prediction in valid_moves:
       return move_map[prediction]
+    print('ELPH IS GUESSING')
     random_number = randint(0, len(valid_moves) - 1)
     return valid_moves[random_number]
 

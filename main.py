@@ -1,9 +1,14 @@
-import elph
+from elph import ELPHStream
 
+s = ELPHStream(1, 2)
+s.record('A')
+s.record('B')
+s.record('A')
+s.record('C')
+s.record('A')
+s.record('B')
+s.record('A')
+s.record('D')
 
-s = elph.ELPHStream()
-s.record('s')
-s.record('f')
-s.record('5')
-s.record('3')
+print(s.predict())
 
