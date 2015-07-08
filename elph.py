@@ -18,10 +18,10 @@ class ELPHStream():
   # hypothesis_threshold: all hypotheses with entropy above this value will be pruned
   # memory: max stream size to be maintained/"max items to be remembered"
   def __init__(self, hypothesis_threshold=1, memory=7):
-    self.__stream = ''
-    self.__hspace = {}
-    self.__threshold = hypothesis_threshold
-    self.__memory = memory
+    self.stream = ''
+    self.hspace = {}
+    self.threshold = hypothesis_threshold
+    self.memory = memory
 
   # record a new event by adding it to the stream and adding applicable hypotheses to the hspace
   # takes event (string) that will be recroded
@@ -29,11 +29,11 @@ class ELPHStream():
 
     # generate all subsets of current stream
     # such subsets can be represented as binary strings the length of the stream
-    for pattern in range(1, 2**len(self.__stream)):
+    for pattern in range(1, 2**len(self.stream)):
 
-      subset = list(self.__stream)
+      subset = list(self.stream)
       # check which bits in the binary string are turned on
-      for i in range(len(self.__stream)):
+      for i in range(len(self.stream)):
         if pattern ^ 2**i:
           # replace on bits with wildcards
           subset[i] = '*'
@@ -42,40 +42,40 @@ class ELPHStream():
       subset = ''.join(subset).lstrip('*')
       if len(subset) > 0:
         # new subset
-        if subset not in self.__hspace.keys():
-          self.__hspace[subset] = { 'count': 1, 'frequency': { event: 1} }
+        if subset not in self.hspace.keys():
+          self.hspace[subset] = { 'count': 1, 'frequency': { event: 1} }
         # old subset and new event
-        elif event not in self.__hspace[subset]['frequency']:
-          self.__hspace[subset]['count'] += 1
-          self.__hspace[subset]['frequency'][event] = 1
+        elif event not in self.hspace[subset]['frequency']:
+          self.hspace[subset]['count'] += 1
+          self.hspace[subset]['frequency'][event] = 1
         # existing subset and existing event
         else:
-          self.__hspace[subset]['count'] += 1
-          self.__hspace[subset]['frequency'][event] += 1
+          self.hspace[subset]['count'] += 1
+          self.hspace[subset]['frequency'][event] += 1
 
     # add event to stream
-    self.__stream = self.__stream + event
+    self.stream = self.stream + event
     # restrict stream to the maximum memory
-    if len(self.__stream) > self.__memory:
-      self.__stream = self.__stream[-1 * self.__memory:]
+    if len(self.stream) > self.memory:
+      self.stream = self.stream[-1 * self.memory:]
 
   # predict the next element in the stream
   # returns element (string), entropy (double) as a tuple
   def predict(self):
     # early return in case prediction is called on empty hspace
-    if len(self.__hspace.items()) == 0:
-      return None, self.__threshold
+    if len(self.hspace.items()) == 0:
+      return None, self.threshold
 
-    lowest_entropy = self.__threshold
+    lowest_entropy = self.threshold
     predictive_subset = ''
 
-    for subset, histogram in self.__hspace.items():
+    for subset, histogram in self.hspace.items():
       # use regex or do manually?
       index = -1
       matches = True
       # calculate lengths once beforehand
-      while index >= -1 * len(self.__stream) and index >= -1 * len(subset) and matches:
-        if self.__stream[index] != subset[index] and subset[index] != '*':
+      while index >= -1 * len(self.stream) and index >= -1 * len(subset) and matches:
+        if self.stream[index] != subset[index] and subset[index] != '*':
           matches = False
         index -= 1
       if matches:
@@ -84,7 +84,7 @@ class ELPHStream():
           lowest_entropy = possible_entropy
           predictive_subset = subset
 
-    result = self.__hspace[predictive_subset]
+    result = self.hspace[predictive_subset]
     max_count = 0
     best_guess = ''
     for guess, count in result['frequency'].items():
@@ -95,8 +95,8 @@ class ELPHStream():
 
   # removes hypotheses that are no longer reliable from the hspace
   def prune(self):
-    hypotheses = self.__hspace.items()
+    hypotheses = self.hspace.items()
     for hypothesis, histogram in hypotheses:
-      if shannon_entropy(histogram) > self.__threshold:
-        del self.__hspace[hypothesis]
+      if shannon_entropy(histogram) > self.threshold:
+        del self.hspace[hypothesis]
 
