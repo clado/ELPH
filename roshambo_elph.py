@@ -5,8 +5,15 @@ from elph import ELPHStream
 # does python have final/static variables?
 # using an array so it can be indexed
 valid_moves = ['R', 'P', 'S']
-opponent_move_map = {'R': 'P', 'P': 'S', 'S': 'R'}
-agent_move_map = {'R': 'S', 'P': 'R', 'S': 'P'}
+move_map = {'R': 'P', 'P': 'S', 'S': 'R'}
+
+# opponent moves:
+#   stream: [opponent_move, opponent_move, opponent_move]
+#   hspace: [opponent_move, opponent_move, opponent_move] : opponent_move
+#
+# agent moves:
+#   stream: [my_move, my_move, my_move, my_move]
+#   hspace: [my_move, my_move, my_move, my_move] : opponent_move
 
 class RoshamboELPHStream():
 
@@ -16,7 +23,9 @@ class RoshamboELPHStream():
 
   def move(self, opponent_move=None):
     if opponent_move != None:
+      self.__agent_moves.record(opponent_move)
       self.__opponent_moves.record(opponent_move)
+      self.__opponent_moves.push(opponent_move)
 
     # should we be pruning every turn?
     self.__agent_moves.prune()
@@ -26,17 +35,18 @@ class RoshamboELPHStream():
     agent_hypothesis, agent_entropy = self.__agent_moves.predict()
 
     print(agent_hypothesis, opponent_hypothesis)
-
-    next_move = self.__transform_prediction(opponent_move_map, opponent_hypothesis)
     
-    # not sure if I'm using the agent move map correctly...
     if agent_entropy < opponent_entropy:
-      next_move = self.__transform_prediction(agent_move_map, agent_hypothesis)
+      best_move = agent_hypothesis
+    else:
+      best_move = opponent_hypothesis
 
-    self.__agent_moves.record(next_move)
+    next_move = self.__transform_prediction(best_hypothesis)
+
+    self.__agent_moves.push(next_move)
     return next_move
 
-  def __transform_prediction(self, move_map, prediction=None):
+  def __transform_prediction(self, prediction=None):
     if prediction in valid_moves:
       return move_map[prediction]
     print('ELPH IS GUESSING')

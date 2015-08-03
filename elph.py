@@ -56,6 +56,7 @@ class ELPHStream():
           self.hspace[subset]['count'] += 1
           self.hspace[subset]['frequency'][event] += 1
 
+  def push(self, event):
     # add event to stream
     self.stream = self.stream + event
     # restrict stream to the maximum memory
