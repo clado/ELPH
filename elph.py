@@ -13,6 +13,9 @@ def reliable_entropy(histogram):
     entropy += (histogram['frequency'][event] / histogram['count']) * log(histogram['frequency'][event] / histogram['count'])
   return entropy * -1
 
+def is_set(number, place):
+  return number & (2**place) != 0
+
 class ELPHStream():
 
   # hypothesis_threshold: all hypotheses with entropy above this value will be pruned
@@ -29,12 +32,12 @@ class ELPHStream():
 
     # generate all subsets of current stream
     # such subsets can be represented as binary strings the length of the stream
-    for pattern in range(1, 2**len(self.stream)):
+    for pattern in range(0, 2**len(self.stream)):
 
       subset = list(self.stream)
       # check which bits in the binary string are turned on
       for i in range(len(self.stream)):
-        if pattern ^ 2**i:
+        if is_set(pattern, i):
           # replace on bits with wildcards
           subset[i] = '*'
 
