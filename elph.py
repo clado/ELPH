@@ -44,17 +44,7 @@ class ELPHStream():
       # strip leading wildcards so that begining subsets remain valid with full streams
       subset = ''.join(subset).lstrip('*')
       if len(subset) > 0:
-        # new subset
-        if subset not in self.hspace.keys():
-          self.hspace[subset] = { 'count': 1, 'frequency': { event: 1} }
-        # old subset and new event
-        elif event not in self.hspace[subset]['frequency']:
-          self.hspace[subset]['count'] += 1
-          self.hspace[subset]['frequency'][event] = 1
-        # existing subset and existing event
-        else:
-          self.hspace[subset]['count'] += 1
-          self.hspace[subset]['frequency'][event] += 1
+        self.__add_to_hspace(subset, event)
 
   def push(self, event):
     # add event to stream
@@ -103,4 +93,20 @@ class ELPHStream():
     for hypothesis, histogram in hypotheses:
       if shannon_entropy(histogram) > self.threshold:
         del self.hspace[hypothesis]
+
+  # records an instance of the event for the subset in the hspace
+  # takes subset (string) observed
+  # takes event (string) to record
+  def __add_to_hspace(self, subset, event):
+    # new subset
+    if subset not in self.hspace.keys():
+      self.hspace[subset] = { 'count': 1, 'frequency': { event: 1 } }
+    # old subset and new event
+    elif event not in self.hspace[subset]['frequency']:
+      self.hspace[subset]['count'] += 1
+      self.hspace[subset]['frequency'][event] = 1
+    # existing subset and existing event
+    else:
+      self.hspace[subset]['count'] += 1
+      self.hspace[subset]['frequency'][event] += 1
 
