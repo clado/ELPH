@@ -41,7 +41,7 @@ class RoshamboELPHStream():
     else:
       best_move = opponent_hypothesis
 
-    next_move = self.__transform_prediction(best_hypothesis)
+    next_move = self.__transform_prediction(best_move)
 
     self.__agent_moves.push(next_move)
     return next_move
