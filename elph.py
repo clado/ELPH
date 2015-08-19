@@ -64,7 +64,8 @@ class ELPHStream():
     if len(self.hspace.items()) == 0:
       return None, self.threshold
 
-    result = self.hspace[self.__lowest_entropy_subset()]
+    subset, lowest_entropy = self.__lowest_entropy_subset()
+    result = self.hspace[subset]
     max_count = 0
     best_guess = ''
     for guess, count in result['frequency'].items():
@@ -116,5 +117,5 @@ class ELPHStream():
           lowest_entropy = possible_entropy
           predictive_subset = subset
 
-    return predictive_subset
+    return predictive_subset, lowest_entropy
 
