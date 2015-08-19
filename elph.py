@@ -60,25 +60,7 @@ class ELPHStream():
     if len(self.hspace.items()) == 0:
       return None, self.threshold
 
-    lowest_entropy = self.threshold
-    predictive_subset = ''
-
-    for subset, histogram in self.hspace.items():
-      # use regex or do manually?
-      index = -1
-      matches = True
-      # calculate lengths once beforehand
-      while index >= -1 * len(self.stream) and index >= -1 * len(subset) and matches:
-        if self.stream[index] != subset[index] and subset[index] != '*':
-          matches = False
-        index -= 1
-      if matches:
-        possible_entropy = shannon_entropy(histogram)
-        if possible_entropy < lowest_entropy:
-          lowest_entropy = possible_entropy
-          predictive_subset = subset
-
-    result = self.hspace[predictive_subset]
+    result = self.hspace[self.__lowest_entropy_subset()]
     max_count = 0
     best_guess = ''
     for guess, count in result['frequency'].items():
@@ -109,4 +91,26 @@ class ELPHStream():
     else:
       self.hspace[subset]['count'] += 1
       self.hspace[subset]['frequency'][event] += 1
+
+  # returns lowest entropy subset of the current stream
+  def __lowest_entropy_subset(self):
+    lowest_entropy = self.threshold
+    predictive_subset = '*'
+
+    for subset, histogram in self.hspace.items():
+      # use regex or do manually?
+      index = -1
+      matches = True
+      # calculate lengths once beforehand
+      while index >= -1 * len(self.stream) and index >= -1 * len(subset) and matches:
+        if self.stream[index] != subset[index] and subset[index] != '*':
+          matches = False
+        index -= 1
+      if matches:
+        possible_entropy = shannon_entropy(histogram)
+        if possible_entropy < lowest_entropy:
+          lowest_entropy = possible_entropy
+          predictive_subset = subset
+
+    return predictive_subset
 
