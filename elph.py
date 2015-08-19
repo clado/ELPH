@@ -30,6 +30,10 @@ class ELPHStream():
   # takes event (string) that will be recroded
   def record(self, event):
 
+    # add `*` to hspace
+    # maybe only do this if the length is > 0 ?
+    self.__add_to_hspace('*', event)
+
     # generate all subsets of current stream
     # such subsets can be represented as binary strings the length of the stream
     for pattern in range(0, 2**len(self.stream)):
