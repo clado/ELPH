@@ -76,10 +76,13 @@ class ELPHStream():
 
   # removes hypotheses that are no longer reliable from the hspace
   def prune(self):
-    hypotheses = self.hspace.items()
-    for hypothesis, histogram in hypotheses:
-      if shannon_entropy(histogram) > self.threshold:
-        del self.hspace[hypothesis]
+    # WHY DO YOU MAKE ME DO THIS, PYTHON?!
+    keys_to_delete = []
+    for hypothesis in self.hspace.keys():
+      if shannon_entropy(self.hspace[hypothesis]) > self.threshold:
+        keys_to_delete += [hypothesis]
+    for key in keys_to_delete:
+      del self.hspace[key]
 
   # records an instance of the event for the subset in the hspace
   # takes subset (string) observed
