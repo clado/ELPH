@@ -14,17 +14,15 @@ class TestELPHStreamDefaults(unittest.TestCase):
     self.s.record('A')
     self.s.push('A')
 
-    # this doesn't look correct to me. Need to debug
-    # was A*A** already degreed useless?
-    self.resulting_hspace = {'A*A': {'count': 1, 'frequency': {'A': 1}},
-      'AAA': {'count': 1, 'frequency': {'A': 1}},
-      'A*': {'count': 2, 'frequency': {'A': 2}},
-      'AA*': {'count': 1, 'frequency': {'A': 1}},
-      'AA': {'count': 2, 'frequency': {'A': 2}},
-      'A**': {'count': 1, 'frequency': {'A': 1}},
-      'A': {'count': 3, 'frequency': {'A': 3}},
-      '*': {'count': 4, 'frequency': {'A': 4}}
-      }
+    self.resulting_hspace = { 'A*A': {'count': 1, 'frequency': {'A': 1}},
+      'AAA'  : {'count': 1, 'frequency': {'A': 1}},
+      'A*'   : {'count': 2, 'frequency': {'A': 2}},
+      'AA*'  : {'count': 1, 'frequency': {'A': 1}},
+      'AA'   : {'count': 2, 'frequency': {'A': 2}},
+      'A**'  : {'count': 1, 'frequency': {'A': 1}},
+      'A'    : {'count': 3, 'frequency': {'A': 3}},
+      '*'    : {'count': 4, 'frequency': {'A': 4}}
+    }
 
   def test_record(self):
     hypotheses = self.s.hspace.items()
