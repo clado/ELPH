@@ -22,7 +22,8 @@ class TestELPHStreamDefaults(unittest.TestCase):
       'AA*': {'count': 1, 'frequency': {'A': 1}},
       'AA': {'count': 2, 'frequency': {'A': 2}},
       'A**': {'count': 1, 'frequency': {'A': 1}},
-      'A': {'count': 3, 'frequency': {'A': 3}}
+      'A': {'count': 3, 'frequency': {'A': 3}},
+      '*': {'count': 4, 'frequency': {'A': 4}}
       }
 
   def test_record(self):
